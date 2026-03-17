@@ -1030,8 +1030,7 @@ tabs = st.tabs([
     "📣 Campaign Analytics",
     "🌍 Multilingual Studio",
     "🎬 Animation Preview",
-    "🪄 Mockups & ROI",
-    "🛠 AI Tools",
+
     "📡 Trend Radar",
     "✅ Launch Checklist",
     "🔍 Competitor Gaps",
@@ -1742,152 +1741,9 @@ with tabs[7]:
                                mime="image/gif")
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  TAB 8 — MOCKUPS & ROI
+#  TAB 8 — TREND RADAR
 # ══════════════════════════════════════════════════════════════════════════════
 with tabs[8]:
-    st.markdown('<p class="sec-label">New Features</p>', unsafe_allow_html=True)
-    st.markdown('<h2 class="sec-title">Mockups & <em>ROI Calculator</em></h2>', unsafe_allow_html=True)
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
-    bi = st.session_state.brand_inputs
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  TAB 9 — AI TOOLS
-# ══════════════════════════════════════════════════════════════════════════════
-with tabs[9]:
-    st.markdown('<p class="sec-label">AI Content Tools</p>', unsafe_allow_html=True)
-    st.markdown('<h2 class="sec-title">AI <em>Tools & Assistant</em></h2>', unsafe_allow_html=True)
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
-    bi = st.session_state.brand_inputs or {}
-
-    # ── Social Media Post Previewer ───────────────────────────────────────────
-    st.markdown('<p class="sec-label">📱 Social Media Post Previewer</p>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="card">
-      <div class="card-title">Post Preview Generator</div>
-      <div class="card-sub">See how your brand post looks on each platform — with tailored caption, hashtags, and CTA.</div>
-    </div>""", unsafe_allow_html=True)
-
-    if st.session_state.palette:
-        prev_plat = st.selectbox("Preview Platform", PLATFORMS, key="prev_plat_tab9")
-        if st.button("👁  Generate Post Preview", key="prev_btn_tab9"):
-            slg = st.session_state.slogans[0]["text"] if st.session_state.slogans else f"Discover {bi.get('company','')}"
-            with st.spinner("Building preview…"):
-                prev = generate_post_preview(
-                    bi.get("company",""), bi.get("industry",""),
-                    bi.get("personality",""), prev_plat, slg,
-                    st.session_state.palette)
-            colors = list(st.session_state.palette.values())
-            bg  = colors[0]["hex"] if colors else "#1B3A6B"
-            acc = colors[1]["hex"] if len(colors) > 1 else "#C9A84C"
-            hashtag_html = " ".join([f'<span style="color:{acc};font-size:0.8rem">{h}</span>' for h in prev.get("hashtags",[])])
-            pv1, pv2 = st.columns([1,1], gap="large")
-            with pv1:
-                st.markdown(f"""
-                <div style="background:{bg};border-radius:14px;padding:22px;max-width:340px;border:1px solid rgba(255,255,255,0.1)">
-                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-                    <div style="width:36px;height:36px;border-radius:50%;background:{acc};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.95rem;color:{bg}">{bi.get("company","B")[:1].upper()}</div>
-                    <div><div style="font-weight:600;font-size:0.86rem;color:white">{bi.get("company","Brand")}</div>
-                    <div style="font-size:0.68rem;color:rgba(255,255,255,0.45)">Sponsored · {prev_plat}</div></div>
-                  </div>
-                  <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);line-height:1.65;margin-bottom:12px">{prev.get("caption","")[:220]}</div>
-                  <div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:4px">{hashtag_html}</div>
-                  <div style="background:{acc};color:{bg};padding:7px 16px;border-radius:20px;font-size:0.72rem;font-weight:700;display:inline-block">{prev.get("cta","Learn More")}</div>
-                </div>""", unsafe_allow_html=True)
-            with pv2:
-                st.markdown(f"""
-                <div class="card">
-                  <p class="sec-label">Platform Specs — {prev_plat}</p>
-                  <div style="font-size:0.84rem;color:var(--text);line-height:1.9">
-                    📏 Char limit: {prev.get("char_limit","—")}<br>
-                    🎯 Format: {prev.get("best_format","—")}<br>
-                    #️⃣  Hashtags: {prev.get("hashtag_count","—")}<br>
-                    💬 Hook: <em style="color:var(--accent)">{prev.get("hook","")[:80]}</em>
-                  </div>
-                </div>""", unsafe_allow_html=True)
-    else:
-        st.info("👈 Complete Brand Inputs and generate your kit first.")
-
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
-    # ── Brand AI Assistant ────────────────────────────────────────────────────
-    st.markdown('<p class="sec-label">🤖 Brand AI Assistant</p>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="card">
-      <div class="card-title">Your Personal Brand Strategist</div>
-      <div class="card-sub">Context-aware AI that knows your brand. Ask about strategy, copy, campaigns, positioning, or anything branding related. Powered by Gemini 2.0 Flash.</div>
-    </div>""", unsafe_allow_html=True)
-
-    company_name  = bi.get("company","your brand")
-    industry_name = bi.get("industry","your industry")
-    top_tag = st.session_state.slogans[0]["text"] if st.session_state.slogans else "your tagline"
-
-    if not st.session_state.chat_history:
-        st.markdown('<p class="sec-label" style="margin-top:14px">⚡ Quick Actions</p>', unsafe_allow_html=True)
-        quick_actions = [
-            ("📝 Improve Tagline",  f"Give me 3 improved versions of: '{top_tag}' for a {industry_name} brand."),
-            ("🎯 Customer Persona", f"Build a detailed customer persona for {company_name}. Include demographics, goals, pain points."),
-            ("📣 30-Day Plan",      f"Create a 30-day social media content calendar for launching {company_name} in {industry_name}."),
-            ("🏆 Differentiators", f"What makes {company_name} unique vs competitors in {industry_name}? Give 5 differentiators."),
-            ("💌 Elevator Pitch",  f"Write a 30-second elevator pitch for {company_name} in {industry_name}."),
-            ("📈 Growth Strategy", f"Suggest 5 growth strategies for a {bi.get('personality','').lower()} brand in {industry_name}."),
-        ]
-        qa_cols = st.columns(3)
-        for i, (label, prompt) in enumerate(quick_actions):
-            with qa_cols[i % 3]:
-                if st.button(label, key=f"qa9_{i}", width="stretch"):
-                    st.session_state.chat_history.append({"role":"user","content":prompt})
-                    ctx = f"Brand: {company_name} | Industry: {industry_name} | Personality: {bi.get('personality','')} | Tagline: {top_tag}"
-                    reply = gemini_call(prompt,
-                        system=f"You are BrandSphere AI, an expert brand strategist. Context: {ctx}. Be specific and actionable. Use bullet points for lists. Max 6 sentences.")
-                    if not reply:
-                        reply = "🔑 Connect your Gemini API key in the API Configuration section for live AI responses."
-                    st.session_state.chat_history.append({"role":"assistant","content":reply})
-                    st.rerun()
-
-    for msg in st.session_state.chat_history:
-        role  = "You" if msg["role"] == "user" else "BrandSphere AI"
-        bg    = "var(--surface2)" if msg["role"] == "user" else "var(--surface)"
-        bc    = "var(--accent)"   if msg["role"] == "assistant" else "var(--border)"
-        align = "flex-end" if msg["role"] == "user" else "flex-start"
-        st.markdown(f"""
-        <div style="display:flex;justify-content:{align};margin:7px 0">
-          <div style="max-width:75%;background:{bg};border:1px solid {bc};border-radius:10px;padding:12px 16px">
-            <div style="font-family:var(--font-mono);font-size:0.52rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px">{role}</div>
-            <div style="font-size:0.87rem;line-height:1.65;color:var(--text)">{msg["content"]}</div>
-          </div>
-        </div>""", unsafe_allow_html=True)
-
-    chat_c1, chat_c2 = st.columns([5, 1])
-    with chat_c1:
-        user_q = st.text_input("Ask BrandSphere AI…", key="chat_q9",
-                               placeholder="e.g. What platform is best for a luxury brand?",
-                               label_visibility="collapsed")
-    with chat_c2:
-        send_btn = st.button("Send →", key="send_btn9")
-
-    if send_btn and user_q.strip():
-        st.session_state.chat_history.append({"role":"user","content":user_q.strip()})
-        ctx = f"Brand: {company_name} | Industry: {industry_name} | Personality: {bi.get('personality','')}"
-        reply = gemini_call(user_q.strip(),
-            system=f"You are BrandSphere AI, a branding expert. Context: {ctx}. Be concise (3-5 sentences).")
-        if not reply:
-            reply = "🔑 Connect your Gemini API key for live AI responses."
-        st.session_state.chat_history.append({"role":"assistant","content":reply})
-        st.rerun()
-
-    if st.session_state.chat_history:
-        if st.button("🗑 Clear Chat", key="clear_chat9"):
-            st.session_state.chat_history = []
-            st.rerun()
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  TAB 10 — TREND RADAR
-# ══════════════════════════════════════════════════════════════════════════════
-with tabs[10]:
     st.markdown('<p class="sec-label">AI Intelligence</p>', unsafe_allow_html=True)
     st.markdown('<h2 class="sec-title">Industry <em>Trend Radar</em></h2>', unsafe_allow_html=True)
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
@@ -1993,9 +1849,9 @@ with tabs[10]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  TAB 11 — LAUNCH CHECKLIST
+#  TAB 9 — LAUNCH CHECKLIST
 # ══════════════════════════════════════════════════════════════════════════════
-with tabs[11]:
+with tabs[9]:
     st.markdown('<p class="sec-label">Go-To-Market</p>', unsafe_allow_html=True)
     st.markdown('<h2 class="sec-title">Brand <em>Launch Checklist</em></h2>', unsafe_allow_html=True)
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
@@ -2090,9 +1946,9 @@ with tabs[11]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  TAB 12 — COMPETITOR GAP FINDER
+#  TAB 10 — COMPETITOR GAP FINDER
 # ══════════════════════════════════════════════════════════════════════════════
-with tabs[12]:
+with tabs[10]:
     st.markdown('<p class="sec-label">Strategic Intelligence</p>', unsafe_allow_html=True)
     st.markdown('<h2 class="sec-title">Competitor <em>Gap Finder</em></h2>', unsafe_allow_html=True)
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
@@ -2181,9 +2037,9 @@ with tabs[12]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  TAB 13 — AUDIENCE PERSONA BUILDER
+#  TAB 11 — AUDIENCE PERSONA BUILDER
 # ══════════════════════════════════════════════════════════════════════════════
-with tabs[13]:
+with tabs[11]:
     st.markdown('<p class="sec-label">Market Intelligence</p>', unsafe_allow_html=True)
     st.markdown('<h2 class="sec-title">Audience <em>Persona Builder</em></h2>', unsafe_allow_html=True)
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
@@ -2307,9 +2163,9 @@ with tabs[13]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  TAB 14 — FEEDBACK
+#  TAB 12 — FEEDBACK
 # ══════════════════════════════════════════════════════════════════════════════
-with tabs[14]:
+with tabs[12]:
     st.markdown('<p class="sec-label">Module 07 — Feedback Intelligence</p>', unsafe_allow_html=True)
     st.markdown('<h2 class="sec-title">Rate & <em>Refine</em></h2>', unsafe_allow_html=True)
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
@@ -2359,9 +2215,9 @@ with tabs[14]:
             st.plotly_chart(feedback_pie(df_log), width='stretch')
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  TAB 15 — DOWNLOAD KIT
+#  TAB 13 — DOWNLOAD KIT
 # ══════════════════════════════════════════════════════════════════════════════
-with tabs[15]:
+with tabs[13]:
     st.markdown('<p class="sec-label">Module 08 — Export Engine</p>', unsafe_allow_html=True)
     st.markdown('<h2 class="sec-title">Download Brand <em>Kit</em></h2>', unsafe_allow_html=True)
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
